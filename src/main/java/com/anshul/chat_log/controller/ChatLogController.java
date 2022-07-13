@@ -50,8 +50,8 @@ public class ChatLogController {
 			return new ResponseEntity<>(new Response(Status.ERROR, USER_LENGTH_ERROR_MESSAGE), HttpStatus.NOT_ACCEPTABLE);
 		}
 		
-		if (StringUtils.isBlank(log.getText())) {
-			return new ResponseEntity<>(new Response(Status.ERROR, "text cannot be null or empty."), HttpStatus.NOT_ACCEPTABLE);
+		if (StringUtils.isBlank(log.getMessage())) {
+			return new ResponseEntity<>(new Response(Status.ERROR, "message cannot be null or empty."), HttpStatus.NOT_ACCEPTABLE);
 		}
 		
 		if (Objects.isNull(log.getIsSent())) {
@@ -69,7 +69,7 @@ public class ChatLogController {
 			return new ResponseEntity<>(new Response(Status.ERROR, "Invalid createdAt format."), HttpStatus.NOT_ACCEPTABLE);
 		}
 		
-		ChatLog chatLog = new ChatLog(user, log.getText(), log.getIsSent(), createdAt);
+		ChatLog chatLog = new ChatLog(user, log.getMessage(), log.getIsSent(), createdAt);
 		ChatLog savedLog = chatLogRepo.save(chatLog);
 		
 		Map<String, Long> response = Map.of("messageId", savedLog.getId());
@@ -78,19 +78,19 @@ public class ChatLogController {
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/{user}")
 	public ResponseEntity<Response> getChatLog(@PathVariable("user") String user, @RequestParam(required = false) Integer from,
-            @RequestParam(required = false, defaultValue = "10") Integer count) {
+            @RequestParam(required = false, defaultValue = "10") Integer limit) {
 		if (checkUserLength(user)) {
 			return new ResponseEntity<>(new Response(Status.ERROR, USER_LENGTH_ERROR_MESSAGE), HttpStatus.NOT_ACCEPTABLE);
 		}
 		
-		List<ChatLog> logs = Objects.isNull(from) ? chatLogRepo.getLatestLogs(user, count) : chatLogRepo.getLogsFrom(user, from, count);
+		List<ChatLog> logs = Objects.isNull(from) ? chatLogRepo.getLatestLogs(user, limit) : chatLogRepo.getLogsFrom(user, from, limit);
 		if (CollectionUtils.isEmpty(logs)) {
 			return new ResponseEntity<>(new Response(Status.ERROR, "No chat found for the user " + user), HttpStatus.NOT_FOUND);
 		}
 		
 		long fromId = logs.stream().min(Comparator.comparingLong(ChatLog::getId)).get().getId();
 		long toId = logs.stream().max(Comparator.comparingLong(ChatLog::getId)).get().getId();
-		PageModel<ChatLog> page = new PageModel<ChatLog>(logs, fromId, toId, count, logs.size());
+		PageModel<ChatLog> page = new PageModel<ChatLog>(logs, fromId, toId, limit, logs.size());
 		
 		return new ResponseEntity<>(new Response(Status.SUCCESS, page), HttpStatus.OK);
 	}

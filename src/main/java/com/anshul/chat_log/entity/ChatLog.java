@@ -28,7 +28,7 @@ public class ChatLog {
 	private String userUniqueName;
 	
 	@Column(nullable = false)
-	private String text;
+	private String message;
 	
 	@Column(name = "is_sent", nullable = false, columnDefinition="boolean")
 	private boolean isSent;
@@ -36,9 +36,9 @@ public class ChatLog {
 	@Column(name = "created_at", nullable = false)
     protected LocalDateTime createdAt;
 
-	public ChatLog(String userUniqueName, String text, boolean isSent, LocalDateTime createdAt) {
+	public ChatLog(String userUniqueName, String message, boolean isSent, LocalDateTime createdAt) {
 		this.userUniqueName = userUniqueName;
-		this.text = text;
+		this.message = message;
 		this.isSent = isSent;
 		this.createdAt = createdAt;
 	}

@@ -13,7 +13,7 @@ import lombok.ToString;
 @ToString
 public class CreateLogRequest {
 	
-	private String text;
+	private String message;
 
 	private Boolean isSent;
 	
